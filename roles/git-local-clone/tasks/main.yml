@@ -1,0 +1,25 @@
+---
+
+- name: "Map local directory (default)"
+  set_fact:
+    _git_local_dir: "{{ git_dest | default(lookup('env','PWD') + '/work/' + ((git_repo | urlsplit('path')) | basename)) }}"
+  when: git_dest is not defined
+
+- name: "Map local directory (w/o directory)"
+  set_fact:
+    _git_local_dir: "{{ lookup('env','PWD') + '/work/' + git_dest }}"
+  when: git_dest is defined and not (git_dest | regex_search('/'))
+
+- name: "Map local directory (w/o basename)"
+  set_fact:
+    _git_local_dir: "{{ git_dest + ((git_repo | urlsplit('path')) | basename) }}"
+  when: git_dest is defined and (git_dest | regex_search('/$'))
+
+- name: "clone {{ git_repo }} locally"
+  host: local
+  git:
+    repo: "{{ git_repo }}"
+    dest: "{{ _git_local_dir }}"
+    depth: "{{ git_depth | default(1) }}"
+    version: "{{ git_version | default('master') }}"
+    force: "{{ git_force | default(no) }}"

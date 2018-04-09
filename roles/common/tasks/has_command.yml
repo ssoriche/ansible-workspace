@@ -1,0 +1,16 @@
+---
+
+- name: check for {{ command }}
+  stat:
+    path: "/usr/local/bin/{{ command }}"
+  register: found_local_command
+
+- name: set {{ command }}
+  set_fact: has_{{ command }}=true
+  when: found_local_command.stat.exists == true
+  no_log: true
+
+- name: set {{ command }}
+  set_fact: has_{{ command }}=false
+  when: found_local_command.stat.exists == false
+  no_log: true

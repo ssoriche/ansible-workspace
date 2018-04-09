@@ -7,6 +7,27 @@ to remote servers on customer premises with only ssh access.
 
 ## Roles
 
+### common
+
+Small tasks that don't fit into their own role and are useful to other roles
+and playbooks.
+
+#### has_command
+
+Checks `/usr/local/bin` for the command contained in the `command` variable
+and sets the fact `has_{{ command }}` on whether the command exists or not.
+
+```
+    - name: check nvim
+      include_role:
+        name: common
+        tasks_from: has_command
+      vars:
+        - command: nvim
+```
+
+If nvim exists in `/usr/local/bin`, `has_nvim` will be `true`.
+
 ### git_local_checkout
 
 This role connects to a remote git repository and checks it out into a local
